@@ -18,7 +18,41 @@ class OwnerDashboardController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $ownerId = $request->user()->owner->id;
+        $ownerId = $request->user()->owner?->id ?? $request->user()->owner_id;
+
+        if ($ownerId === null) {
+            return $this->success([
+                'summary' => [
+                    'total_properties' => 0,
+                    'total_rooms' => 0,
+                    'available_rooms' => 0,
+                    'occupied_rooms' => 0,
+                    'total_tenants' => 0,
+                    'occupancy_rate' => 0,
+                ],
+                'financial' => [
+                    'total_revenue' => 0,
+                    'total_expenses' => 0,
+                    'profit' => 0,
+                    'unpaid_invoices' => 0,
+                    'overdue_invoices' => 0,
+                    'pending_payments' => 0,
+                ],
+                'revenue' => [
+                    'total_income' => 0,
+                    'total_expenses' => 0,
+                    'total_profit' => 0,
+                    'current_month_income' => 0,
+                    'current_month_expenses' => 0,
+                    'current_month_profit' => 0,
+                ],
+                'operations' => [
+                    'pending_cleaning' => 0,
+                ],
+                'recent_payments' => [],
+                'monthly_revenue' => [],
+            ]);
+        }
 
         $properties = Property::where('owner_id', $ownerId)->pluck('id');
 

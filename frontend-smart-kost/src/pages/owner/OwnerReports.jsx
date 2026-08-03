@@ -17,10 +17,13 @@ import { PaginationNav } from "@/components/shared/pagination-nav"
 const PAGE_SIZE = 15
 
 export default function OwnerReports() {
+  const today = new Date()
+  const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+  const fmtDate = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
   const [activeTab, setActiveTab] = useState("finance")
   const [propertyFilter, setPropertyFilter] = useState("")
-  const [startDate, setStartDate] = useState("")
-  const [endDate, setEndDate] = useState("")
+  const [startDate, setStartDate] = useState(fmtDate(firstOfMonth))
+  const [endDate, setEndDate] = useState(fmtDate(today))
   const [financePage, setFinancePage] = useState(1)
   const [occupancyPage, setOccupancyPage] = useState(1)
   const [tenantCheckinPage, setTenantCheckinPage] = useState(1)
