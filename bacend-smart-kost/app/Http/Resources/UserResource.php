@@ -50,7 +50,10 @@ class UserResource extends JsonResource
             'permissions' => $this->when($request->user()?->isDeveloper(), function () {
                 return $this->getDirectPermissions()->pluck('name');
             }),
-            'effective_permissions' => $this->getAllPermissions()->pluck('name'),
+            'permissions_locked' => (bool) $this->permissions_locked,
+            'effective_permissions' => $this->permissions_locked && ! $this->isDeveloper()
+                ? $this->getDirectPermissions()->pluck('name')
+                : $this->getAllPermissions()->pluck('name'),
         ];
     }
 }

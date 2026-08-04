@@ -5,6 +5,7 @@ import useUIStore from "@/stores/uiStore"
 import Sidebar from "./Sidebar"
 import Navbar from "./Navbar"
 import MobileBottomNav from "./MobileBottomNav"
+import NoAccess from "@/pages/shared/NoAccess"
 import { LoadingPage } from "@/components/shared/spinner"
 import { cn } from "@/lib/utils"
 
@@ -72,6 +73,11 @@ export default function AppLayout() {
   if (isLoading) return <LoadingPage />
   if (!token || !user) return <Navigate to="/login" replace />
 
+  const isDeveloper = user.roles?.some((r) => r.name === "developer")
+  if (!isDeveloper && (user.effective_permissions || []).length === 0) {
+    return <NoAccess />
+  }
+
   const title = pageTitles[location.pathname] || "SmartKost"
 
   return (
@@ -80,7 +86,7 @@ export default function AppLayout() {
       <div className="hidden md:block">
         <Sidebar />
       </div>
-      <div className={cn("transition-all duration-300 pb-20 md:pb-0", sidebarOpen ? "md:ml-64" : "md:ml-16")}>
+      <div className={cn("transition-all duration-300 pb-24 md:pb-0", sidebarOpen ? "md:ml-64" : "md:ml-16")}>
         <Navbar title={title} />
         <main className="p-4 md:p-6">
           <Outlet />

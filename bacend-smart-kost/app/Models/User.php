@@ -27,6 +27,7 @@ class User extends Authenticatable
         'password',
         'avatar',
         'is_active',
+        'permissions_locked',
         'last_login_at',
         'owner_id',
     ];
@@ -42,6 +43,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'permissions_locked' => 'boolean',
             'last_login_at' => 'datetime',
         ];
     }

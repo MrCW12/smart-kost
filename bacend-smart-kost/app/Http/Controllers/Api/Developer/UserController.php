@@ -140,6 +140,8 @@ class UserController extends Controller
                 ->toArray();
 
             $permissions = array_values(array_unique(array_merge($permissions, $protected)));
+        } else {
+            $user->forceFill(['permissions_locked' => true])->save();
         }
 
         $user->syncPermissions($permissions);

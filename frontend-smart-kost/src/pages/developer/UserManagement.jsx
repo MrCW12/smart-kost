@@ -102,7 +102,7 @@ export default function UserManagement() {
 
   const openAccess = (user) => {
     setAccessUser(user)
-    setAccessDraft([...(user.permissions || [])])
+    setAccessDraft([...(user.effective_permissions || [])])
   }
 
   const toggleAccessPerm = (perm) => {
@@ -319,7 +319,7 @@ export default function UserManagement() {
           <DialogHeader>
             <DialogTitle>Kelola Akses: {accessUser?.name}</DialogTitle>
             <DialogDescription>
-              Role: <span className="capitalize">{accessUser?.roles?.[0]?.name}</span>. Centang hak akses tambahan untuk user ini.
+              Role: <span className="capitalize">{accessUser?.roles?.[0]?.name}</span>. Centang seluruh akses menu untuk user ini.
             </DialogDescription>
           </DialogHeader>
           <div className="max-h-[50vh] overflow-y-auto rounded-lg border">
@@ -367,9 +367,16 @@ export default function UserManagement() {
             })}
           </div>
           <DialogFooter className="gap-2">
-            <p className="mr-auto text-xs text-muted-foreground">
-              {accessDraft.length} hak akses dipilih
-            </p>
+            <div className="mr-auto flex flex-col gap-1">
+              <p className="text-xs text-muted-foreground">
+                {accessDraft.length} hak akses dipilih
+              </p>
+              {accessDraft.length === 0 && (
+                <p className="text-xs text-destructive">
+                  Jika disimpan, user tidak akan bisa mengakses menu apa pun.
+                </p>
+              )}
+            </div>
             <Button variant="outline" onClick={() => setAccessUser(null)}>Batal</Button>
             <LoadingButton loading={accessMutation.isPending} onClick={() => accessMutation.mutate(accessUser?.id)}>
               Simpan
