@@ -21,11 +21,15 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::before(function ($user, $ability) {
-            if (! $user instanceof \App\Models\User || ! $user->permissions_locked) {
+            if (! $user instanceof \App\Models\User) {
                 return null;
             }
 
-            return $user->getDirectPermissions()->pluck('name')->contains($ability);
+            if ($user->permissions_locked) {
+                return $user->getDirectPermissions()->pluck('name')->contains($ability);
+            }
+
+            return $user->checkPermissionTo($ability) ?: null;
         });
     }
 }
