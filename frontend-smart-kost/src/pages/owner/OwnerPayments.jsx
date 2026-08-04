@@ -317,20 +317,20 @@ export default function OwnerPayments() {
       </div>
 
       <div className="rounded-lg border bg-card p-4">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-col gap-3 mb-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-2">
             <Wallet className="h-5 w-5 text-green-500" />
             <h2 className="text-lg font-semibold">Riwayat Pembayaran</h2>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <Input
               placeholder="Cari no. pembayaran / invoice..."
               value={searchQuery}
               onChange={(e) => { setSearchQuery(e.target.value); setHistoryPage(1) }}
-              className="w-[250px]"
+              className="w-full sm:w-[250px]"
             />
             <Select value={methodFilter} onValueChange={(v) => { setMethodFilter(v); setHistoryPage(1) }}>
-              <SelectTrigger className="w-[180px]"><SelectValue placeholder="Semua Metode" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-[180px]"><SelectValue placeholder="Semua Metode" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Semua Metode</SelectItem>
                 <SelectItem value="cash">Tunai</SelectItem>
@@ -347,7 +347,29 @@ export default function OwnerPayments() {
           <p className="text-sm text-muted-foreground">Belum ada riwayat pembayaran.</p>
         ) : (
           <>
-          <div className="rounded-md border">
+          <div className="space-y-3 md:hidden">
+            {historyItems.map((item) => (
+              <div key={item.id} className="rounded-md border p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium">{item.payment_number}</span>
+                  <StatusBadge type="payment" status={item.status} />
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-x-2 gap-y-1 text-sm">
+                  <span className="text-muted-foreground">Invoice</span>
+                  <span className="text-right">{item.invoice_number || '-'}</span>
+                  <span className="text-muted-foreground">Tenant</span>
+                  <span className="text-right">{item.tenant_name || '-'}</span>
+                  <span className="text-muted-foreground">Jumlah</span>
+                  <span className="text-right font-medium">{formatCurrency(item.amount)}</span>
+                  <span className="text-muted-foreground">Metode</span>
+                  <span className="text-right">{PAYMENT_METHODS[item.payment_method] || item.payment_method}</span>
+                  <span className="text-muted-foreground">Tanggal</span>
+                  <span className="text-right">{formatDate(item.payment_date)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="hidden rounded-md border md:block">
             <div className="max-h-[500px] overflow-y-auto">
             <Table>
               <TableHeader>
