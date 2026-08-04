@@ -1,0 +1,8 @@
+.git
+.gitignore
+frontend-smart-kost
+README.md
+DATABASE_ARCHITECTURE.md
+SYSTEM_ARCHITECTURE.md
+vercel.json
+*.md
