@@ -124,6 +124,7 @@ class PaymentController extends Controller
             $this->paymentService->confirmPayment($payment, $request->user()->id);
         } else {
             $invoice->update(['status' => InvoiceStatus::PENDING]);
+            $this->paymentService->notifyPaymentSubmitted($payment);
         }
 
         return $this->success(

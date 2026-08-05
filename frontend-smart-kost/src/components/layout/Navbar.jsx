@@ -20,7 +20,7 @@ export default function Navbar({ title }) {
 
   const role = user?.roles?.[0]?.name
   const isDeveloper = role === "developer"
-  const hasNotifications = ["developer", "owner", "admin"].includes(role)
+  const hasNotifications = ["developer", "owner", "admin", "staff"].includes(role)
 
   const { data: ownersData } = useQuery({
     queryKey: ["owners"],
@@ -51,7 +51,13 @@ export default function Navbar({ title }) {
   const openNotification = (n) => {
     if (!n.read_at) markReadMutation.mutate(n.id)
     setNotifOpen(false)
-    navigate(role === "admin" ? "/admin/payments" : "/owner/payments")
+    if (role === "staff") {
+      navigate("/staff/payments")
+    } else if (role === "admin") {
+      navigate("/admin/payments")
+    } else {
+      navigate("/owner/payments")
+    }
   }
 
   const timeAgo = (iso) => {

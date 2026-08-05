@@ -171,8 +171,8 @@ Route::prefix('v1')->group(function () {
             Route::delete('task-groups/{taskGroup}', [TaskGroupController::class, 'destroy'])->middleware('can:cleaning.assign');
         });
 
-        // Notifications (owner/admin/dev)
-        Route::middleware('role:developer|owner|admin')->group(function () {
+        // Notifications (owner/admin/staff/dev)
+        Route::middleware('role:developer|owner|admin|staff')->group(function () {
             Route::get('notifications', [NotificationController::class, 'index']);
             Route::post('notifications/read-all', [NotificationController::class, 'markAllRead']);
             Route::post('notifications/{notification}/read', [NotificationController::class, 'markRead']);

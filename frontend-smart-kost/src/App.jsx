@@ -6,6 +6,7 @@ import DeveloperDashboard from "@/pages/dashboard/DeveloperDashboard"
 import OwnerDashboard from "@/pages/dashboard/OwnerDashboard"
 import StaffDashboard from "@/pages/dashboard/StaffDashboard"
 import UserManagement from "@/pages/developer/UserManagement"
+import AuditLogs from "@/pages/developer/AuditLogs"
 import ComingSoon from "@/pages/shared/ComingSoon"
 import ProtectedRoute from "@/routes/ProtectedRoute"
 import RootRedirect from "@/routes/RootRedirect"
@@ -21,6 +22,8 @@ import OwnerExpenses from "@/pages/owner/OwnerExpenses"
 import OwnerReports from "@/pages/owner/OwnerReports"
 import OwnerUtilitySettings from "@/pages/owner/OwnerUtilitySettings"
 import OwnerTasks from "@/pages/owner/OwnerTasks"
+import StaffTaskDetail from "@/pages/staff/StaffTaskDetail"
+import StaffTasks from "@/pages/staff/StaffTasks"
 import Occupants from "@/pages/shared/Occupants"
 import Settings from "@/pages/shared/Settings"
 
@@ -42,7 +45,8 @@ export default function App() {
           <Route element={<ProtectedRoute roles={["developer"]}><AppLayout /></ProtectedRoute>}>
             <Route path="/developer" element={<DeveloperDashboard />} />
             <Route path="/developer/users" element={<RequirePerm permission="user.view"><UserManagement /></RequirePerm>} />
-            <Route path="/developer/audit-logs" element={<RequirePerm permission="system.audit-log"><ComingSoon title="Audit Log" /></RequirePerm>} />
+            <Route path="/developer/audit-logs" element={<RequirePerm permission="system.audit-log"><AuditLogs /></RequirePerm>} />
+            <Route path="/developer/tasks" element={<RequirePerm permission="cleaning.view"><OwnerTasks /></RequirePerm>} />
             <Route path="/profile" element={<Settings />} />
           </Route>
 
@@ -95,7 +99,8 @@ export default function App() {
             <Route path="/staff/expenses" element={<RequirePerm permission="expense.view"><OwnerExpenses /></RequirePerm>} />
             <Route path="/staff/reports" element={<RequirePerm permission="report.finance"><OwnerReports /></RequirePerm>} />
             <Route path="/staff/utility-settings" element={<RequirePerm permission="utility.setting"><OwnerUtilitySettings /></RequirePerm>} />
-            <Route path="/staff/tasks" element={<RequirePerm permission="cleaning.view"><OwnerTasks /></RequirePerm>} />
+            <Route path="/staff/tasks" element={<RequirePerm permission="cleaning.view"><StaffTasks /></RequirePerm>} />
+            <Route path="/staff/tasks/:id" element={<RequirePerm permission="cleaning.view"><StaffTaskDetail /></RequirePerm>} />
             <Route path="/staff/penghuni" element={<RequirePerm permission="tenant.view"><Occupants /></RequirePerm>} />
             <Route path="/profile" element={<Settings />} />
           </Route>

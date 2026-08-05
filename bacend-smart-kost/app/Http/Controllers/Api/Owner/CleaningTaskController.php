@@ -91,6 +91,14 @@ class CleaningTaskController extends Controller
         $propertyIds = $this->getUserPropertyIds($request);
         $query->whereIn('property_id', $propertyIds);
 
+        if ($request->boolean('mine')) {
+            $query->where('assigned_to', auth()->id());
+        }
+
+        if ($request->boolean('available')) {
+            $query->where('status', 'waiting')->whereNull('assigned_to');
+        }
+
         if ($request->property_id) {
             $query->where('property_id', $request->property_id);
         }
@@ -113,6 +121,28 @@ class CleaningTaskController extends Controller
 
         $tasks = $query->latest()->paginate($request->get('per_page', 15));
 
+        $meta = [
+            'current_page' => $tasks->currentPage(),
+            'last_page' => $tasks->lastPage(),
+            'per_page' => $tasks->perPage(),
+            'total' => $tasks->total(),
+        ];
+
+        if ($request->boolean('mine')) {
+            $meta['status_counts'] = CleaningTask::where('assigned_to', auth()->id())
+                ->whereIn('property_id', $propertyIds)
+                ->selectRaw('status, count(*) as count')
+                ->groupBy('status')
+                ->pluck('count', 'status');
+        }
+
+        if ($request->boolean('available')) {
+            $meta['available_count'] = CleaningTask::where('status', 'waiting')
+                ->whereNull('assigned_to')
+                ->whereIn('property_id', $propertyIds)
+                ->count();
+        }
+
         return $this->successWithMeta(
             $tasks->map(fn ($t) => [
                 'id' => $t->id,
@@ -131,12 +161,7 @@ class CleaningTaskController extends Controller
                 'photos_count' => $t->photos->count(),
                 'created_at' => $t->created_at,
             ]),
-            [
-                'current_page' => $tasks->currentPage(),
-                'last_page' => $tasks->lastPage(),
-                'per_page' => $tasks->perPage(),
-                'total' => $tasks->total(),
-            ]
+            $meta
         );
     }
 

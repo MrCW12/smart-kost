@@ -28,6 +28,10 @@ export const permissionApi = {
   list: () => api.get('/developer/permissions'),
 }
 
+export const auditApi = {
+  list: (params) => api.get('/developer/audit-logs', { params }),
+}
+
 export const propertyApi = {
   list: (params) => api.get('/properties', { params }),
   get: (id) => api.get(`/properties/${id}`),

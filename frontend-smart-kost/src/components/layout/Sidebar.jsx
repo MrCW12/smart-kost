@@ -33,7 +33,7 @@ export const menuByRole = {
       { label: "Users", icon: UserCog, to: "/developer/users", permission: "user.view" },
       { label: "Audit Log", icon: Shield, to: "/developer/audit-logs", permission: "system.audit-log" },
     ]},
-    { section: "Owner", items: [
+    { section: "Operasional", items: [
       { label: "Properti", icon: Building2, to: "/owner/properties", permission: "property.view" },
       { label: "Kamar", icon: DoorOpen, to: "/owner/rooms", permission: "room.view" },
       { label: "Tipe Kamar", icon: BedDouble, to: "/owner/room-types", permission: "room-type.view" },
@@ -42,13 +42,11 @@ export const menuByRole = {
       { label: "Invoices", icon: Receipt, to: "/owner/invoices", permission: "invoice.view" },
       { label: "Pembayaran", icon: Wallet, to: "/owner/payments", permission: "payment.view" },
       { label: "Pengeluaran", icon: ClipboardList, to: "/owner/expenses", permission: "expense.view" },
-      { label: "Task", icon: ClipboardCheck, to: "/owner/tasks", permission: "cleaning.view" },
+      { label: "Task", icon: ClipboardCheck, to: "/developer/tasks", permission: "cleaning.view" },
+      { label: "Task Staff", icon: ClipboardCheck, to: "/staff/tasks", permission: "cleaning.view" },
       { label: "Laporan", icon: BarChart3, to: "/owner/reports", permission: "report.finance" },
-      { label: "Tarif Utilitas", icon: Zap, to: "/owner/utility-settings", permission: "utility.setting" },
+      { label: "Utilitas", icon: Zap, to: "/owner/utility-settings", permission: "utility.setting" },
       { label: "Profil", icon: Settings, to: "/profile" },
-    ]},
-    { section: "Admin", items: [
-      { label: "Task", icon: ClipboardCheck, to: "/admin/tasks", permission: "cleaning.view" },
     ]},
   ],
   owner: [{ items: MODULE_ITEMS("owner") }],

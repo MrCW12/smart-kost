@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Enums\PaymentStatus;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Payment extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'invoice_id',
         'tenant_id',

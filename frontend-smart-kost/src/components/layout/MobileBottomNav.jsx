@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils"
 const bottomNavByRole = {
   developer: [
     { label: "Home", icon: Home, to: "/developer" },
-    { label: "Users", icon: UserCog, to: "/developer/users", permission: "user.view" },
+    { label: "Task", icon: ClipboardCheck, to: "/developer/tasks", permission: "cleaning.view" },
     { label: "Lainnya", icon: MoreHorizontal, more: true },
   ],
   owner: [

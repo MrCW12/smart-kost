@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UtilityReading extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'room_id',
         'property_id',

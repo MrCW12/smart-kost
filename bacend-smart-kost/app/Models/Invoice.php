@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\InvoiceStatus;
+use App\Traits\Auditable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Invoice extends Model
 {
+    use Auditable;
+
     protected $fillable = [
         'tenant_id',
         'room_id',

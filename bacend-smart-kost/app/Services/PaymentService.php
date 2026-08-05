@@ -44,6 +44,68 @@ class PaymentService
         if (!$hasOtherPending) {
             $invoice->update(['status' => InvoiceStatus::UNPAID]);
         }
+
+        $this->notifyPaymentRejected($payment);
+    }
+
+    public function notifyPaymentSubmitted(Payment $payment): void
+    {
+        $property = $payment->property;
+        if (!$property) {
+            return;
+        }
+
+        $recipientIds = [];
+
+        $ownerUserId = $property->owner?->user_id;
+        if ($ownerUserId) {
+            $recipientIds[] = $ownerUserId;
+        }
+
+        $adminIds = User::where('owner_id', $property->owner_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'admin'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $adminIds);
+
+        $staffIds = User::where('owner_id', $property->owner_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'staff'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $staffIds);
+
+        $developerIds = User::whereHas('roles', fn ($q) => $q->where('name', 'developer'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $developerIds);
+
+        $recipientIds = array_unique($recipientIds);
+        if (empty($recipientIds)) {
+            return;
+        }
+
+        $amount = (float) $payment->amount;
+        $tenantName = $payment->tenant?->name ?? 'Tenant';
+        $invoiceNumber = $payment->invoice?->invoice_number ?? '';
+
+        foreach ($recipientIds as $userId) {
+            AppNotification::create([
+                'user_id' => $userId,
+                'property_id' => $property->id,
+                'type' => 'payment_submitted',
+                'title' => 'Pembayaran Baru',
+                'message' => $tenantName . ' mengajukan pembayaran ' . number_format($amount, 0, ',', '.')
+                    . ($invoiceNumber ? ' (' . $invoiceNumber . ')' : '') . ' — menunggu konfirmasi',
+                'data' => [
+                    'payment_id' => $payment->id,
+                    'payment_number' => $payment->payment_number,
+                    'invoice_id' => $payment->invoice_id,
+                    'invoice_number' => $invoiceNumber,
+                    'amount' => $payment->amount,
+                    'tenant_name' => $tenantName,
+                ],
+            ]);
+        }
     }
 
     private function recalculateInvoiceStatus(Invoice $invoice): void
@@ -82,6 +144,12 @@ class PaymentService
             ->toArray();
         $recipientIds = array_merge($recipientIds, $adminIds);
 
+        $staffIds = User::where('owner_id', $property->owner_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'staff'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $staffIds);
+
         $developerIds = User::whereHas('roles', fn ($q) => $q->where('name', 'developer'))
             ->pluck('id')
             ->toArray();
@@ -104,6 +172,66 @@ class PaymentService
                 'title' => 'Pembayaran Dikonfirmasi',
                 'message' => $tenantName . ' membayar ' . number_format($amount, 0, ',', '.')
                     . ($invoiceNumber ? ' (' . $invoiceNumber . ')' : ''),
+                'data' => [
+                    'payment_id' => $payment->id,
+                    'payment_number' => $payment->payment_number,
+                    'invoice_id' => $payment->invoice_id,
+                    'invoice_number' => $invoiceNumber,
+                    'amount' => $payment->amount,
+                    'tenant_name' => $tenantName,
+                ],
+            ]);
+        }
+    }
+
+    private function notifyPaymentRejected(Payment $payment): void
+    {
+        $property = $payment->property;
+        if (!$property) {
+            return;
+        }
+
+        $recipientIds = [];
+
+        $ownerUserId = $property->owner?->user_id;
+        if ($ownerUserId) {
+            $recipientIds[] = $ownerUserId;
+        }
+
+        $adminIds = User::where('owner_id', $property->owner_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'admin'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $adminIds);
+
+        $staffIds = User::where('owner_id', $property->owner_id)
+            ->whereHas('roles', fn ($q) => $q->where('name', 'staff'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $staffIds);
+
+        $developerIds = User::whereHas('roles', fn ($q) => $q->where('name', 'developer'))
+            ->pluck('id')
+            ->toArray();
+        $recipientIds = array_merge($recipientIds, $developerIds);
+
+        $recipientIds = array_unique($recipientIds);
+        if (empty($recipientIds)) {
+            return;
+        }
+
+        $amount = (float) $payment->amount;
+        $tenantName = $payment->tenant?->name ?? 'Tenant';
+        $invoiceNumber = $payment->invoice?->invoice_number ?? '';
+
+        foreach ($recipientIds as $userId) {
+            AppNotification::create([
+                'user_id' => $userId,
+                'property_id' => $property->id,
+                'type' => 'payment_rejected',
+                'title' => 'Pembayaran Ditolak',
+                'message' => 'Pembayaran ' . $tenantName . ' sebesar ' . number_format($amount, 0, ',', '.')
+                    . ($invoiceNumber ? ' (' . $invoiceNumber . ')' : '') . ' ditolak',
                 'data' => [
                     'payment_id' => $payment->id,
                     'payment_number' => $payment->payment_number,

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\Owner;
 use App\Models\User;
+use App\Services\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
@@ -144,10 +145,14 @@ class UserController extends Controller
             $user->forceFill(['permissions_locked' => true])->save();
         }
 
+        $oldPermissions = $user->getDirectPermissions()->pluck('name')->sort()->values()->toArray();
         $user->syncPermissions($permissions);
+        $newPermissions = $user->getDirectPermissions()->pluck('name')->sort()->values()->toArray();
+
+        AuditLogger::log('permission.sync', $user, ['permissions' => $oldPermissions], ['permissions' => $newPermissions]);
 
         return $this->success(
-            $user->getDirectPermissions()->pluck('name'),
+            $newPermissions,
             'User permissions updated successfully'
         );
     }
